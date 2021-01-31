@@ -2,7 +2,8 @@ import sys
 from colorama import init
 init(strip=not sys.stdout.isatty())
 from termcolor import cprint 
-
+from random import randint
+from time import sleep
 class player () : 
     def __init__(self): 
         self.moves=[] 
@@ -98,3 +99,15 @@ class player () :
             self.winner()
         return choice
 
+    def play_Bot(self,Reserved_Moves,dimension) : 
+        cprint('\nBot Turn  :)','yellow')
+        sleep(1)
+        while True : 
+        # generate a random move  
+                choice=randint(1, dimension**2)
+                if choice not in Reserved_Moves : 
+                    break 
+        self.moves.append(choice)
+        if  len(self.moves) >=dimension:
+            self.winner()
+        return choice

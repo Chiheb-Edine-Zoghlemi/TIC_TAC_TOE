@@ -7,12 +7,15 @@ from termcolor import cprint
 from pyfiglet import figlet_format
 
 
-def Winner_Exist(p1,p2):
+def Winner_Exist(p1,p2,bot):
     if p1.status == True : 
         cprint('\nPlayer  1  Wins \n','green')
         return True 
     elif p2.status == True : 
-        cprint('\n Player 2 Wins \n ','green')
+        if bot :
+            cprint('\n BOT Wins \n ','green')
+        else : 
+            cprint('\n Player 2 Wins \n ','green')
         return True
     else : 
         return False
@@ -79,11 +82,24 @@ def set_matrix() :
     display_matrix(matrix,dimension)
     return dimension,matrix
 #set the player // return a player 
+def set_Bot(dimension) : 
+    p=player()
+    p.set_wining_moves(dimension)
+    while True : 
+        cprint('Chose BOT Symbole \n ','yellow')
+        symbole=input('\n')
+        try :
+            symbole=int(symbole)
+        except : 
+            p.set_choice(choice=symbole)
+            break 
+    return  p
+#set the player // return a player 
 def set_player(dimension,i) : 
     p=player()
     p.set_wining_moves(dimension)
     while True : 
-        print('Player {i} Chose Your Symbole \n '.format(i=i))
+        cprint('Player {i} Chose Your Symbole \n '.format(i=i),'yellow')
         symbole=input('\n')
         try :
             symbole=int(symbole)
@@ -118,11 +134,38 @@ def menu () :
                     else :
                         cprint('Please  provide a valid choice ','yellow')
             return choice
-#the game 
-def game(p1,p2,matrix,dimension):
+#the game  fot vs bot 
+def vsbot_game(p1,p2,matrix,dimension):
     Reserved_Moves=[]
     for role in range(dimension**2) :
-        if Winner_Exist(p1,p2): 
+        if Winner_Exist(p1,p2,True): 
+            display_matrix(matrix,dimension)
+            break 
+        elif role % 2 == 0 : 
+            
+            display_matrix(matrix,dimension)
+            choice=p1.play(Reserved_Moves,dimension)
+            postion=[(index, row.index(choice)) for index, row in enumerate(matrix) if choice in row]
+            postion=postion[0]
+            matrix[postion[0]][postion[1]] = p1.choice
+            Reserved_Moves.append(choice)
+        else : 
+            
+            display_matrix(matrix,dimension)
+            choice=p2.play_Bot(Reserved_Moves,dimension)
+            postion=[(index, row.index(choice)) for index, row in enumerate(matrix) if choice in row]
+            postion=postion[0]
+            matrix[postion[0]][postion[1]] = p2.choice
+            Reserved_Moves.append(choice)
+    if role == dimension**2 : 
+        cprint('---- DRAW ----','yellow')
+
+
+#the game for 2 players 
+def twoplayer_game(p1,p2,matrix,dimension):
+    Reserved_Moves=[]
+    for role in range(dimension**2) :
+        if Winner_Exist(p1,p2,False): 
             display_matrix(matrix,dimension)
             break 
         elif role % 2 == 0 : 
@@ -150,7 +193,7 @@ def twoplayers(matrix,dimension):
     cprint('===============================================================','blue')
     p1=set_player(dimension,1)
     p2=set_player(dimension,2)
-    game(p1,p2,matrix,dimension)
+    twoplayer_game(p1,p2,matrix,dimension)
 
 # in case he chose the vs bot mode 
 def vsbot(matrix,dimension):
@@ -158,6 +201,9 @@ def vsbot(matrix,dimension):
     cprint('                         VS BOT MODE','red')
     cprint('===============================================================','blue')
     display_matrix(matrix,dimension)
+    p1=set_player(dimension,1)
+    p2=set_Bot(dimension)
+    vsbot_game(p1,p2,matrix,dimension)
 
 #switch case implemented in python 
 def Switcher(i,matrix,dimension):
