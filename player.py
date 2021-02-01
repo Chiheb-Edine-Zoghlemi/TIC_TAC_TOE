@@ -10,6 +10,7 @@ class player () :
         self.choice=''
         self.status=False
         wining_moves=[]
+        self.color=''
     def set_choice(self,choice): 
         self.choice=choice
     def flatt_array(self):

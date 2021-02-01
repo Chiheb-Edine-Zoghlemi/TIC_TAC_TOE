@@ -221,9 +221,8 @@ def main() :
     
     cprint('                      Setting Board Dimension','red')
     cprint('===============================================================\n','blue')
-    dimension,matrix=set_matrix()
-    
     while True :
+        dimension,matrix=set_matrix()
         choice = menu()
         if choice == '+' : 
             exit_program()
