@@ -29,7 +29,7 @@ def creat_line(dimension):
     return line
 
 #for displaying the matrix 
-def display_matrix(matrix,dimension) : 
+def display_matrix(matrix,dimension,p1,p2) : 
     line=creat_line(dimension)
     ch=line
     for i in  range(dimension):
@@ -43,7 +43,10 @@ def display_matrix(matrix,dimension) :
                 else : 
                     ch=ch+("| {index} |".format(index=index))
             else : 
-                ch=ch+("|  {index}  |".format(index=index))
+                if index ==p1.choice : 
+                    ch=ch+("|  {color}{index}\033[00m  |".format(index=index,color=p1.color))
+                else : 
+                    ch=ch+("|  {color}{index}\033[00m  |".format(index=index,color=p2.color))
 
         ch=ch+line
     print(ch)
@@ -59,7 +62,16 @@ def exit_program() :
     print('Linkdin => https://www.linkedin.com/in/malekhammou/ ')
     print('Github => https://github.com/malekhammou ')
     cprint('===============================================================','blue')
-    
+#this function to rest the matrix after each game 
+def reset_matrix(dimension): 
+    matrix = [ [ 0 for i in range(dimension) ] for j in range(dimension) ]
+    index=1
+    for i in range(dimension):
+        for j in range(dimension) : 
+            matrix[i][j]=index
+            index=index+1
+    return matrix
+      
 # this function interact with the user to create the matrix it returns matrix,dimension
 def set_matrix() : 
     cprint('Please chose the matrix dimension \n','yellow')
@@ -79,7 +91,6 @@ def set_matrix() :
         for j in range(dimension) : 
             matrix[i][j]=index
             index=index+1
-    display_matrix(matrix,dimension)
     return dimension,matrix
 #set the player // return a player 
 def set_Bot(dimension) : 
@@ -139,11 +150,11 @@ def vsbot_game(p1,p2,matrix,dimension):
     Reserved_Moves=[]
     for role in range(dimension**2) :
         if Winner_Exist(p1,p2,True): 
-            display_matrix(matrix,dimension)
+            display_matrix(matrix,dimension,p1,p2)
             break 
         elif role % 2 == 0 : 
             
-            display_matrix(matrix,dimension)
+            display_matrix(matrix,dimension,p1,p2)
             choice=p1.play(Reserved_Moves,dimension)
             postion=[(index, row.index(choice)) for index, row in enumerate(matrix) if choice in row]
             postion=postion[0]
@@ -151,7 +162,7 @@ def vsbot_game(p1,p2,matrix,dimension):
             Reserved_Moves.append(choice)
         else : 
             
-            display_matrix(matrix,dimension)
+            display_matrix(matrix,dimension,p1,p2)
             choice=p2.play_Bot(Reserved_Moves,dimension)
             postion=[(index, row.index(choice)) for index, row in enumerate(matrix) if choice in row]
             postion=postion[0]
@@ -166,11 +177,11 @@ def twoplayer_game(p1,p2,matrix,dimension):
     Reserved_Moves=[]
     for role in range(dimension**2) :
         if Winner_Exist(p1,p2,False): 
-            display_matrix(matrix,dimension)
+            display_matrix(matrix,dimension,p1,p2)
             break 
         elif role % 2 == 0 : 
             cprint('\nPLAYER 1 ','yellow')
-            display_matrix(matrix,dimension)
+            display_matrix(matrix,dimension,p1,p2)
             choice=p1.play(Reserved_Moves,dimension)
             postion=[(index, row.index(choice)) for index, row in enumerate(matrix) if choice in row]
             postion=postion[0]
@@ -178,7 +189,7 @@ def twoplayer_game(p1,p2,matrix,dimension):
             Reserved_Moves.append(choice)
         else : 
             cprint('\nPLAYER 2 ','yellow')
-            display_matrix(matrix,dimension)
+            display_matrix(matrix,dimension,p1,p2)
             choice=p2.play(Reserved_Moves,dimension)
             postion=[(index, row.index(choice)) for index, row in enumerate(matrix) if choice in row]
             postion=postion[0]
@@ -192,7 +203,9 @@ def twoplayers(matrix,dimension):
     cprint('                         2 PLAYERS MODE','red')
     cprint('===============================================================','blue')
     p1=set_player(dimension,1)
+    p1.color='\033[36m'
     p2=set_player(dimension,2)
+    p2.color='\033[35m'
     twoplayer_game(p1,p2,matrix,dimension)
 
 # in case he chose the vs bot mode 
@@ -200,9 +213,11 @@ def vsbot(matrix,dimension):
     cprint('\n===============================================================','blue')
     cprint('                         VS BOT MODE','red')
     cprint('===============================================================','blue')
-    display_matrix(matrix,dimension)
+    
     p1=set_player(dimension,1)
+    p1.color='\033[36m'
     p2=set_Bot(dimension)
+    p2.color='\033[35m'
     vsbot_game(p1,p2,matrix,dimension)
 
 #switch case implemented in python 
@@ -221,8 +236,9 @@ def main() :
     
     cprint('                      Setting Board Dimension','red')
     cprint('===============================================================\n','blue')
+    dimension,matrix=set_matrix()
     while True :
-        dimension,matrix=set_matrix()
+        matrix=reset_matrix(dimension)
         choice = menu()
         if choice == '+' : 
             exit_program()
